@@ -2,8 +2,12 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
 "use client"
-
+/* Imports de libarairies */
 import { useState } from "react"
+import { format } from "date-fns"
+import { fr } from "date-fns/locale"
+
+/* Imports de fichiers locaux */
 import Calendrier from "@/lib/components/atoms/Calendrier"
 import Sidepannel from "@/lib/components/molecules/Sidepannel"
 import RdvCard from "@/lib/components/atoms/RdvCard"
@@ -51,7 +55,12 @@ function Rdv() {
                 <div className="self-start mt-5 ml-4 text-2xl font-bold tracking-tight text-white max-md:ml-2.5">
                   Rendez-vous du jour
                 </div>
-                {rdvs && rdvs.length > 0 ? (
+                {rdvs.length < 1 ? (
+                  <div>
+                    Aucun rendez-vous
+                    {format(new Date(date), "eeee dd MMMM", { locale: fr })}
+                  </div>
+                ) : (
                   rdvs.map((rdv, index) => (
                     <RdvCard
                       key={index}
@@ -60,7 +69,16 @@ function Rdv() {
                           ? rdv.patient.firstname + " " + rdv.patient.lastname
                           : ""
                       }
-                      time={rdv.dispo ? rdv.dispo.timeslot : ""}
+                      time={
+                        rdv.dispo
+                          ? new Date(rdv.dispo.timeslot).getUTCHours() +
+                            "H" +
+                            new Date(rdv.dispo.timeslot)
+                              .getUTCMinutes()
+                              .toString()
+                              .padStart(2, "0")
+                          : ""
+                      }
                       reason={rdv.motif || "Aucun motif renseigné"}
                       history={
                         rdv.patient &&
@@ -72,11 +90,6 @@ function Rdv() {
                       }
                     />
                   ))
-                ) : (
-                  <h3>
-                    Aucun rendez-vous le{" "}
-                    {new Date(date).toLocaleDateString("fr-FR", options)}
-                  </h3>
                 )}
               </div>
             </div>

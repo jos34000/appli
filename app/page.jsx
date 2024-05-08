@@ -1,6 +1,6 @@
 "use client"
 /* eslint-disable react/no-unescaped-entities */
-import { useState, React } from "react"
+import { useState } from "react"
 import useSpecialites from "@/lib/hooks/useSpecialites"
 import handleSignin from "@/lib/hooks/handleSignin"
 import InputField from "@/lib/components/atoms/InputField"

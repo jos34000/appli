@@ -1,32 +1,49 @@
-import React, { useState, useEffect } from "react"
-import { fetch, Body } from "@tauri-apps/api/http"
-import Calendar from "react-calendar"
-import usePatients from "@/lib/hooks/usePatients"
+/* Import de librairies */
+import { useState, useEffect } from "react"
+import { fetch, Body, ResponseType } from "@tauri-apps/api/http"
+
+/* Import de fichiers locaux */
+import SearchPatient from "@/lib/components/molecules/SearchPatient"
+import DateSelector from "@/lib/components/atoms/DateSelector"
+import TimeslotSelector from "@/lib/components/atoms/TimeslotSelector"
 
 export default function AddRdv({ onCancelClick }) {
-  const { patients } = usePatients()
+  /* Values à envoyer pour add a rdv  */
   const token = localStorage.getItem("Cookie")
   const [patientId, setPatientId] = useState(null)
-  const [date, setDate] = useState(new Date())
+  const [date, setDate] = useState(new Date().toISOString().split("T")[0])
   const [timeslot, setTimeslot] = useState("")
   const [motif, setMotif] = useState("")
-
-  const onPatientChange = (e) => {
-    setPatientId(e.target.value)
-  }
-
-  const onDateChange = (e) => {
-    setDate(new Date(e.target.value))
-  }
-
-  const onTimeChange = (e) => {
-    setTimeslot(e.target.value)
-  }
 
   const onMotifChange = (e) => {
     setMotif(e.target.value)
   }
 
+  /* Value à récupérer pour fetch les timeslots */
+  const [timeslots, setTimeslots] = useState([])
+
+  /* Fetch à chaque changement de la date pour récupérer les dispos de la journée */
+  useEffect(() => {
+    fetch("http://192.168.1.3:3000/api/findTimeslots", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: Body.json({
+        token,
+        date,
+      }),
+      responseType: ResponseType.JSON,
+    })
+      .then((data) => {
+        setTimeslots(data.data)
+      })
+      .catch((error) => {
+        console.error("Error:", error)
+      })
+  }, [date])
+
+  /* Formulaire final à envoyer pour ajouter le RDV  */
   const handleOkClick = async () => {
     const response = await fetch("http://192.168.1.3:3000/api/addRdv", {
       method: "POST",
@@ -35,15 +52,23 @@ export default function AddRdv({ onCancelClick }) {
       },
       body: Body.json({
         patientId,
-        date,
         timeslot,
+        motif,
         token,
       }),
+      responseType: ResponseType.JSON,
     })
+    console.log(response)
 
-    const data = await response.json()
-    console.log(data)
+    /* Fermeture de la modale */
+    if (response.ok) {
+      onCancelClick()
+    }
   }
+
+  useEffect(() => {
+    console.log(timeslot)
+  }, [timeslot])
 
   return (
     <div className="fixed z-10 inset-0 overflow-y-auto">
@@ -64,44 +89,16 @@ export default function AddRdv({ onCancelClick }) {
                   className="text-lg leading-6 font-medium text-green-400"
                   id="modal-headline"
                 >
-                  Nouveau patient
+                  Nouvelle consultation
                 </h3>
                 <div className="mt-2">
-                  <div>
-                    <select
-                      placeholder="Patient"
-                      value={patientId ? patientId.patientId : ""}
-                      onChange={onPatientChange}
-                      className="bg-white text-black rounded-sm mb-2 mr-2"
-                    >
-                      {patients.map((patient, index) => (
-                        <option
-                          key={index}
-                          value={patient.patient.patientId}
-                          className="text-white"
-                        >
-                          {patient.patient.firstname} {patient.patient.lastname}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <input
-                      type="date"
-                      value={date}
-                      onChange={onDateChange}
-                      className="bg-white text-black rounded-sm mb-2"
-                    />
-                  </div>
-                  <div>
-                    <input
-                      type="text"
-                      placeholder="Heure de rendez-vous"
-                      value={timeslot}
-                      onChange={onTimeChange}
-                      className="bg-white text-black rounded-sm mb-2"
-                    />
-                  </div>
+                  <SearchPatient onPatientIdChange={setPatientId} />
+                  <DateSelector onDateChange={setDate} />
+                  <TimeslotSelector
+                    onTimeChange={setTimeslot}
+                    timeslots={timeslots}
+                  />
+
                   <div>
                     <input
                       type="text"

@@ -6,9 +6,11 @@ import PatientCard from "@/lib/components/atoms/PatientCard"
 import AddPatient from "@/lib/components/molecules/AddPatient"
 import usePatients from "@/lib/hooks/usePatients"
 import useExportPatient from "@/lib/hooks/useExportPatient"
+import useTimeslots from "@/lib/hooks/useTimeslots"
 
 export default function Patients() {
   const { patients } = usePatients()
+  const timeslots = useTimeslots()
 
   const [search, setSearch] = useState("")
   const [filteredPatients, setFilteredPatients] = useState([])
@@ -67,6 +69,7 @@ export default function Patients() {
                       onAgeChange={(e) => setAge(e.target.value)}
                       timeslot={timeslot}
                       onTimeChange={(e) => setTimeslot(e.target.value)}
+                      timeslots={timeslots}
                       email={email}
                       onEmailChange={(e) => setEmail(e.target.value)}
                       handleOkClick={handleOkClick}

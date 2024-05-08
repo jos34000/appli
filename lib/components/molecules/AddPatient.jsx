@@ -1,4 +1,5 @@
-import React from "react"
+import { format } from "date-fns"
+import { fr } from "date-fns/locale"
 
 export default function AddPatient({
   firstname,
@@ -9,6 +10,7 @@ export default function AddPatient({
   onAgeChange,
   timeslot,
   onTimeChange,
+  timeslots,
   email,
   onEmailChange,
   handleOkClick,
@@ -57,13 +59,34 @@ export default function AddPatient({
                     onChange={onAgeChange}
                     className="bg-white text-black rounded-sm mb-2 mr-2"
                   />
-                  <input
-                    type="text"
-                    placeholder="Heure de rendez-vous"
+                  <select
                     value={timeslot}
                     onChange={onTimeChange}
                     className="bg-white text-black rounded-sm mb-2"
-                  />
+                  >
+                    <option value="">Choisir votre créneau</option>
+                    {timeslots.map((timeslot, index) => {
+                      const date = new Date(timeslot.timeslot)
+                      const utcDate = new Date(
+                        date.getUTCFullYear(),
+                        date.getUTCMonth(),
+                        date.getUTCDate(),
+                        date.getUTCHours(),
+                        date.getUTCMinutes()
+                      )
+                      const formattedDate = format(
+                        utcDate,
+                        "EEEE dd MMMM - HH:mm",
+                        { locale: fr }
+                      )
+
+                      return (
+                        <option key={index} value={timeslot.dispoId}>
+                          {formattedDate}
+                        </option>
+                      )
+                    })}
+                  </select>
                   <input
                     type="email"
                     placeholder="Email du patient"
