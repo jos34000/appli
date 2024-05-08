@@ -1,4 +1,5 @@
-import { useState } from "react"
+"use client"
+import { useEffect, useState } from "react"
 import SidebarLink from "@/lib/components/atoms/SidebarLink"
 import AddRdv from "@/lib/components/molecules/AddRdv"
 import useDeco from "@/lib/hooks/useDeco"
@@ -10,16 +11,12 @@ export default function Sidepannel() {
   return (
     <aside className="flex flex-col w-3/12 max-md:ml-0 max-md:w-full max-h-96">
       <nav className="flex flex-col grow justify-between p-4 mx-auto w-full text-sm font-medium leading-5 text-white bg-neutral-900 max-md:mt-6">
-        <div className="flex gap-3 px-3 py-2 whitespace-nowrap rounded-lg bg-zinc-800">
-          {isModalOpen && (
-            <AddRdv onCancelClick={() => setIsModalOpen(false)} />
-          )}
-          <SidebarLink
-            icon="https://cdn.builder.io/api/v1/image/assets/TEMP/19a097b61bd5a9c658091861d8dba577f1499d5b43b230ef0a797fcb719853ec?apiKey=3f0228c97dfd4d3398207a5ad823f317&"
-            text="Accueil"
-            destination="/home"
-          />
-        </div>
+        {isModalOpen && <AddRdv onCancelClick={() => setIsModalOpen(false)} />}
+        <SidebarLink
+          icon="https://cdn.builder.io/api/v1/image/assets/TEMP/19a097b61bd5a9c658091861d8dba577f1499d5b43b230ef0a797fcb719853ec?apiKey=3f0228c97dfd4d3398207a5ad823f317&"
+          text="Accueil"
+          destination="/home"
+        />
         <SidebarLink
           icon="https://cdn.builder.io/api/v1/image/assets/TEMP/3d1ad04ddb7015629255ccaeb1389d72137aa918cdc516c521f397761a2a8216?apiKey=3f0228c97dfd4d3398207a5ad823f317&"
           text="Rendez-vous"

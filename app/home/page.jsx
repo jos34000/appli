@@ -1,6 +1,8 @@
 "use client"
 /* eslint-disable @next/next/no-img-element */
 import { useState } from "react"
+import { format } from "date-fns"
+import { fr } from "date-fns/locale"
 import Sidepannel from "@/lib/components/molecules/Sidepannel"
 import RdvCard from "@/lib/components/atoms/RdvCard"
 import useRdv from "@/lib/hooks/useRdv"
@@ -38,7 +40,13 @@ function Home() {
                       ? rdv.patient.firstname + " " + rdv.patient.lastname
                       : ""
                   }
-                  time={rdv.dispo ? rdv.dispo.timeslot : ""}
+                  time={
+                    rdv.dispo
+                      ? format(new Date(rdv.dispo.timeslot), "HH:mm", {
+                          locale: fr,
+                        })
+                      : ""
+                  }
                   reason={rdv.motif || "Aucun motif renseigné"}
                   history={
                     rdv.patient &&

@@ -57,8 +57,8 @@ function Rdv() {
                 </div>
                 {rdvs.length < 1 ? (
                   <div>
-                    Aucun rendez-vous
-                    {format(new Date(date), "eeee dd MMMM", { locale: fr })}
+                    {"Aucun rendez-vous " +
+                      format(new Date(date), "eeee dd MMMM", { locale: fr })}
                   </div>
                 ) : (
                   rdvs.map((rdv, index) => (
